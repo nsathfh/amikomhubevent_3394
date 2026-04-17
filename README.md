@@ -2,12 +2,6 @@
 	<img src="https://ui-avatars.com/api/?name=Amikom+Event+Hub&background=6366f1&color=fff&size=128" alt="Logo" width="80" height="80" style="border-radius: 20px; margin-bottom: 20px;">
 	<h1>Amikom Event Hub</h1>
 
-	<p>
-		<img src="https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
-		<img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind">
-		<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JS">
-	</p>
-
 	<a href="https://amikomhubevent-3394-main-ciwbmn.free.laravel.cloud/">Lihat Demo Aplikasi</a>
 </div>
 
