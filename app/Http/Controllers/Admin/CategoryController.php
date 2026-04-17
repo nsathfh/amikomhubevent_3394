@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
-class EventController extends Controller
+class CategoryController extends Controller
 {
     public function index()
     {
-        return view('admin.events');
+        return view('admin.categories.index');
     }
 }

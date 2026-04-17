@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
@@ -20,7 +20,7 @@
 
     <main class="max-w-3xl mx-auto px-6 py-20">
         <div class="mb-12">
-            <a href="event-detail.html" class="text-indigo-600 font-bold flex items-center gap-2 mb-6">
+            <a href="{{ route('events.show') }}" class="text-indigo-600 font-bold flex items-center gap-2 mb-6">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
@@ -35,7 +35,7 @@
             <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
                 <h3 class="text-xl font-bold mb-6 border-b pb-4">Pesanan Anda</h3>
                 <div class="flex gap-6 items-start">
-                    <img src="assets/concert.png" alt="Event" class="w-24 h-24 rounded-2xl object-cover">
+                    <img src="{{ asset('assets/concert.png') }}" alt="Event" class="w-24 h-24 rounded-2xl object-cover">
                     <div>
                         <h4 class="font-extrabold text-lg">Jazz Night 2024: A Celebration</h4>
                         <p class="text-slate-500">16 Nov 2024 • The Blue Note Lounge</p>
@@ -103,8 +103,9 @@
 
     <!-- Overlay Midtrans Simulation -->
     <div id="midtrans-overlay"
-        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] overflow-hidden shadow-2xl animate-bounce-in">
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 p-6"
+        style="display: none;">
+        <div class="bg-white w-full max-w-sm rounded-4xl overflow-hidden shadow-2xl animate-bounce-in">
             <div class="bg-slate-50 p-6 flex justify-between items-center border-b">
                 <img src="https://midtrans.com/assets/img/logo-dark.png" alt="Midtrans Logo" class="h-6">
                 <button onclick="hideMidtrans()" class="p-2 hover:bg-slate-200 rounded-full">
@@ -120,7 +121,7 @@
                 <p class="text-xs text-slate-400">Order ID #TRX-99210</p>
 
                 <div class="mt-8 space-y-4">
-                    <button onclick="window.location.href='ticket.html'"
+                    <button onclick="window.location.href='{{ route('ticket') }}'"
                         class="w-full py-4 border-2 border-indigo-100 rounded-2xl flex justify-between items-center px-6 hover:border-indigo-600 transition group">
                         <span class="font-bold group-hover:text-indigo-600">GoPay / QRIS</span>
                         <span class="text-indigo-400">→</span>
@@ -152,12 +153,10 @@
 
     <script>
         function showMidtrans() {
-            document.getElementById('midtrans-overlay').classList.remove('hidden');
-            document.getElementById('midtrans-overlay').classList.add('flex');
+            document.getElementById('midtrans-overlay').style.display = 'grid';
         }
         function hideMidtrans() {
-            document.getElementById('midtrans-overlay').classList.add('hidden');
-            document.getElementById('midtrans-overlay').classList.remove('flex');
+            document.getElementById('midtrans-overlay').style.display = 'none';
         }
 
     </script>
