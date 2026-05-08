@@ -52,73 +52,41 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y border-t">
-                        <tr class="transition hover:bg-slate-50/50">
-                            <td class="px-8 py-6">
-                                <span
-                                    class="rounded-lg bg-indigo-50 px-3 py-1 font-mono text-sm font-bold text-indigo-600">#TRX-99210</span>
-                            </td>
-                            <td class="px-8 py-6">
-                                <p class="font-bold text-slate-800">Donni Prabowo</p>
-                                <p class="text-xs text-slate-500">donni@example.com</p>
-                            </td>
-                            <td class="px-8 py-6">
-                                <p class="font-medium text-slate-700">Jazz Night 2024</p>
-                            </td>
-                            <td class="px-8 py-6 text-sm text-slate-500">26 Mar 2024, 17:45</td>
-                            <td class="px-8 py-6">
-                                <span
-                                    class="rounded-lg bg-green-100 px-3 py-1 text-xs font-bold uppercase text-green-700 ring-1 ring-green-200">Success</span>
-                            </td>
-                            <td class="px-8 py-6 text-right font-black text-slate-900">Rp 155.000</td>
-                        </tr>
-                        <tr class="text-slate-400 transition hover:bg-slate-50/50">
-                            <td class="px-8 py-6">
-                                <span class="rounded-lg bg-slate-100 px-3 py-1 font-mono text-sm font-bold">#TRX-99209</span>
-                            </td>
-                            <td class="px-8 py-6">
-                                <p class="font-bold">Maya Sari</p>
-                                <p class="text-xs">maya@example.com</p>
-                            </td>
-                            <td class="px-8 py-6">
-                                <p class="font-medium">AI & Future Workshop</p>
-                            </td>
-                            <td class="px-8 py-6 text-sm">26 Mar 2024, 15:20</td>
-                            <td class="px-8 py-6">
-                                <span
-                                    class="rounded-lg bg-orange-100 px-3 py-1 text-xs font-bold uppercase text-orange-700 ring-1 ring-orange-200">Pending</span>
-                            </td>
-                            <td class="px-8 py-6 text-right font-black">Rp 55.000</td>
-                        </tr>
-                        <tr class="transition hover:bg-slate-50/50">
-                            <td class="px-8 py-6">
-                                <span
-                                    class="rounded-lg bg-indigo-50 px-3 py-1 font-mono text-sm font-bold text-indigo-600">#TRX-99208</span>
-                            </td>
-                            <td class="px-8 py-6">
-                                <p class="font-bold text-slate-800">Budi Santoso</p>
-                                <p class="text-xs text-slate-500">budi@example.com</p>
-                            </td>
-                            <td class="px-8 py-6">
-                                <p class="font-medium text-slate-700">Hackathon 2024</p>
-                            </td>
-                            <td class="px-8 py-6 text-sm text-slate-500">25 Mar 2024, 10:00</td>
-                            <td class="px-8 py-6">
-                                <span
-                                    class="rounded-lg bg-slate-100 px-3 py-1 text-xs font-bold uppercase text-slate-600 ring-1 ring-slate-200">Free</span>
-                            </td>
-                            <td class="px-8 py-6 text-right font-black text-slate-900">Rp 0</td>
-                        </tr>
+                        @forelse($transactions as $transaction)
+                            <tr class="transition hover:bg-slate-50/50">
+                                <td class="px-8 py-6">
+                                    <span class="rounded-lg bg-indigo-50 px-3 py-1 font-mono text-sm font-bold text-indigo-600">#{{ $transaction->order_id }}</span>
+                                </td>
+                                <td class="px-8 py-6">
+                                    <p class="font-bold text-slate-800">{{ $transaction->customer_name }}</p>
+                                    <p class="text-xs text-slate-500">{{ $transaction->customer_email }}</p>
+                                </td>
+                                <td class="px-8 py-6">
+                                    <p class="font-medium text-slate-700">{{ $transaction->event?->title ?? '-' }}</p>
+                                </td>
+                                <td class="px-8 py-6 text-sm text-slate-500">{{ $transaction->created_at->format('d M Y, H:i') }}</td>
+                                <td class="px-8 py-6">
+                                    <span class="rounded-lg px-3 py-1 text-xs font-bold uppercase ring-1 {{ strcasecmp($transaction->status, 'Success') === 0 ? 'bg-green-100 text-green-700 ring-green-200' : (strcasecmp($transaction->status, 'Pending') === 0 ? 'bg-orange-100 text-orange-700 ring-orange-200' : 'bg-slate-100 text-slate-600 ring-slate-200') }}">
+                                        {{ $transaction->status }}
+                                    </span>
+                                </td>
+                                <td class="px-8 py-6 text-right font-black text-slate-900">Rp {{ number_format($transaction->total_price, 0, ',', '.') }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-8 py-10 text-center text-slate-500">Belum ada transaksi.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
 
             <div class="flex items-center justify-between border-t bg-slate-50/50 px-8 py-6">
-                <p class="text-sm font-medium text-slate-500">Menampilkan 3 dari 124 transaksi</p>
-                <div class="flex gap-2">
-                    <button class="cursor-not-allowed rounded-xl border px-4 py-2 text-sm font-bold opacity-50">Previous</button>
-                    <button class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-md">1</button>
-                    <button class="rounded-xl border px-4 py-2 text-sm font-bold transition hover:bg-white">2</button>
-                    <button class="rounded-xl border px-4 py-2 text-sm font-bold transition hover:bg-white">Next</button>
+                <p class="text-sm font-medium text-slate-500">
+                    Menampilkan {{ $transactions->firstItem() ?? 0 }} - {{ $transactions->lastItem() ?? 0 }} dari {{ $transactions->total() }} transaksi
+                </p>
+                <div>
+                    {{ $transactions->links() }}
                 </div>
             </div>
         </div>

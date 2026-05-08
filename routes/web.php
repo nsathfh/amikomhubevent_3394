@@ -11,9 +11,10 @@ use App\Http\Controllers\Admin\TransactionController as AdminTransactionControll
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/event/1', [EventController::class, 'show'])->name('events.show');
-Route::redirect('/event-detail.html', '/event/1');
+Route::get('/event/{event?}', [EventController::class, 'show'])->name('events.show');
+Route::redirect('/event-detail.html', '/event');
 Route::get('/checkout', [EventController::class, 'showCheckout'])->name('checkout');
+Route::post('/checkout', [EventController::class, 'processCheckout'])->name('checkout.process');
 Route::get('/my-ticket', [TicketController::class, 'show'])->name('ticket');
 
 //Rute Admin Area
@@ -21,7 +22,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function() {
     Route::get('/', [DashboardController::class, 'viewDashboard'])->name('dashboard');
     Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions.index');
-    Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
+    Route::resource('categories', AdminCategoryController::class)->except(['show']);
     Route::resource('events', AdminEventController::class);
 });
 

@@ -14,6 +14,11 @@
 
 
 <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+    @if(session('success'))
+        <div class="m-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-6 py-4 text-sm text-emerald-700">
+            {{ session('success') }}
+        </div>
+    @endif
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-black tracking-widest">

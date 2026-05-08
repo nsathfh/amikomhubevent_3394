@@ -2,12 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class TicketController extends Controller
 {
-    public function show()
+    public function show(Request $request): View
     {
-        return view('ticket');
+        $orderId = $request->string('order')->toString();
+
+        $transaction = Transaction::with('event')
+            ->when($orderId, fn ($query) => $query->where('order_id', $orderId))
+            ->latest()
+            ->firstOrFail();
+
+        return view('ticket', compact('transaction'));
     }
 }
