@@ -22,4 +22,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function() {
     Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions.index');
     Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
+    Route::resource('events', AdminEventController::class);
 });
+
