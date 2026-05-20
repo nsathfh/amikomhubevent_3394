@@ -33,7 +33,7 @@
                 class="absolute -bottom-10 -right-10 w-64 h-64 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
             </div>
             <img src="assets/concert.png" alt="Concert"
-                class="rounded-[2rem] shadow-2xl relative z-10 w-full object-cover aspect-[4/5] object-center">
+                class="rounded-4xl shadow-2xl relative z-10 w-full object-cover aspect-4/5 object-center">
 
             <div class="absolute -bottom-6 -left-6 glass p-6 rounded-2xl shadow-xl z-20 border border-white">
                 <div class="flex items-center gap-4">
@@ -73,12 +73,36 @@
             </div>
         </div>
 
+        <div class="mb-12 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div class="mb-6 flex items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-2xl font-black">Kategori AmikomEventHub</h3>
+                    <p class="text-sm text-slate-500">Pilihan kategori untuk membantu pengunjung menjelajah platform.</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach($categories as $category)
+                    <a href="/?category={{ $category->slug }}" class="group rounded-2xl border border-slate-100 bg-slate-50 p-5 transition hover:-translate-y-1 hover:bg-indigo-50 hover:shadow-md">
+                        <div class="flex items-center justify-between gap-4">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-widest text-indigo-500">Kategori</p>
+                                <h4 class="mt-2 text-lg font-black text-slate-800 group-hover:text-indigo-700">{{ $category->name }}</h4>
+                            </div>
+                            <div class="rounded-2xl bg-white px-4 py-2 text-sm font-bold text-slate-500 shadow-sm">
+                                {{ $events->where('category_id', $category->id)->count() }} Event
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+
         <!-- Zona Menampilkan Grid List Event -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($events as $event)
             <div
                 class="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden">
-                <div class="relative overflow-hidden aspect-[3/4]">
+                <div class="relative overflow-hidden aspect-3/4">
                     <img src="https://placehold.com/200x600" alt="{{ $event->title }}"
                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                     <div
@@ -103,6 +127,30 @@
                 </div>
             </div>
             @endforeach
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6 py-20">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <h2 class="text-3xl font-extrabold mb-2">Partner Pendukung</h2>
+                <p class="text-slate-500 font-medium">Logo partner yang mendukung aplikasi web AmikomEventHub.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+            @forelse($partners as $partner)
+                <div class="group rounded-3xl border border-slate-100 bg-white p-5 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+                    <div class="mb-4 flex h-20 items-center justify-center rounded-2xl bg-slate-50 p-3">
+                        <img src="{{ $partner->logo_url }}" alt="{{ $partner->name }}" class="max-h-full max-w-full object-contain">
+                    </div>
+                    <p class="text-sm font-bold text-slate-700 group-hover:text-indigo-600">{{ $partner->name }}</p>
+                </div>
+            @empty
+                <div class="col-span-full rounded-3xl border border-dashed border-slate-200 bg-white p-8 text-center text-slate-500">
+                    Belum ada partner yang ditambahkan.
+                </div>
+            @endforelse
         </div>
     </section>
 @endsection
