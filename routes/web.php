@@ -6,6 +6,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function() {
     Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions.index');
     Route::resource('categories', AdminCategoryController::class)->except(['show']);
+    Route::resource('partners', AdminPartnerController::class)->except(['show']);
     Route::resource('events', AdminEventController::class);
 });
 
