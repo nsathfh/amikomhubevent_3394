@@ -20,11 +20,26 @@
 
         <section class="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-sm">
             <div class="border-b bg-slate-50/50 px-8 py-6">
-                <div class="flex items-center justify-between gap-4">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
                         <h2 class="text-lg font-black text-slate-800">Daftar Kategori</h2>
                         <p class="text-sm text-slate-500">Kolom menampilkan id, nama, created_at, dan updated_at.</p>
                     </div>
+                    <form method="GET" action="{{ route('admin.categories.index') }}" class="w-full lg:max-w-md">
+                        <label class="sr-only" for="category-search">Cari kategori</label>
+                        <div class="flex gap-3">
+                            <input id="category-search" type="text" name="q" value="{{ request('q') }}" placeholder="Cari kategori..."
+                                class="w-full rounded-2xl border border-slate-200 bg-white px-5 py-3 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+                            <button type="submit" class="rounded-2xl bg-indigo-600 px-5 py-3 font-bold text-white transition hover:bg-indigo-700">
+                                Cari
+                            </button>
+                            @if(request()->filled('q'))
+                                <a href="{{ route('admin.categories.index') }}" class="rounded-2xl border border-slate-200 bg-white px-5 py-3 font-bold text-slate-700 transition hover:bg-slate-50">
+                                    Reset
+                                </a>
+                            @endif
+                        </div>
+                    </form>
                 </div>
             </div>
 

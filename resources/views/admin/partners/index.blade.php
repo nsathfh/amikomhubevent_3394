@@ -18,6 +18,28 @@
         </div>
     @endif
 
+    <div class="border-b bg-slate-50/50 px-8 py-6">
+        <form method="GET" action="{{ route('admin.partners.index') }}" class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <h2 class="text-lg font-black text-slate-800">Daftar Partner</h2>
+                <p class="text-sm text-slate-500">Gunakan pencarian untuk memfilter nama partner.</p>
+            </div>
+            <div class="flex w-full gap-3 lg:max-w-md">
+                <label class="sr-only" for="partner-search">Cari partner</label>
+                <input id="partner-search" type="text" name="q" value="{{ request('q') }}" placeholder="Cari partner..."
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-5 py-3 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+                <button type="submit" class="rounded-2xl bg-indigo-600 px-5 py-3 font-bold text-white transition hover:bg-indigo-700">
+                    Cari
+                </button>
+                @if(request()->filled('q'))
+                    <a href="{{ route('admin.partners.index') }}" class="rounded-2xl border border-slate-200 bg-white px-5 py-3 font-bold text-slate-700 transition hover:bg-slate-50">
+                        Reset
+                    </a>
+                @endif
+            </div>
+        </form>
+    </div>
+
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-black tracking-widest">
