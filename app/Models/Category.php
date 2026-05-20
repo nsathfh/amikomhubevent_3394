@@ -21,6 +21,7 @@ class Category extends Model
         });
     }
 
+    // Menandakan atribut: 1 Kategori dapat memiliki banyak list Event
     public function events()
     {
         return $this->hasMany(Event::class);
