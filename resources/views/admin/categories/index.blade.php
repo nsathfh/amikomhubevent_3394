@@ -23,7 +23,6 @@
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
                         <h2 class="text-lg font-black text-slate-800">Daftar Kategori</h2>
-                        <p class="text-sm text-slate-500">Kolom menampilkan id, nama, created_at, dan updated_at.</p>
                     </div>
                     <form method="GET" action="{{ route('admin.categories.index') }}" class="w-full lg:max-w-md">
                         <label class="sr-only" for="category-search">Cari kategori</label>

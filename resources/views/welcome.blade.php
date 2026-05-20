@@ -73,30 +73,6 @@
             </div>
         </div>
 
-        <div class="mb-12 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
-            <div class="mb-6 flex items-center justify-between gap-4">
-                <div>
-                    <h3 class="text-2xl font-black">Kategori AmikomEventHub</h3>
-                    <p class="text-sm text-slate-500">Pilihan kategori untuk membantu pengunjung menjelajah platform.</p>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach($categories as $category)
-                    <a href="/?category={{ $category->slug }}" class="group rounded-2xl border border-slate-100 bg-slate-50 p-5 transition hover:-translate-y-1 hover:bg-indigo-50 hover:shadow-md">
-                        <div class="flex items-center justify-between gap-4">
-                            <div>
-                                <p class="text-xs font-bold uppercase tracking-widest text-indigo-500">Kategori</p>
-                                <h4 class="mt-2 text-lg font-black text-slate-800 group-hover:text-indigo-700">{{ $category->name }}</h4>
-                            </div>
-                            <div class="rounded-2xl bg-white px-4 py-2 text-sm font-bold text-slate-500 shadow-sm">
-                                {{ $events->where('category_id', $category->id)->count() }} Event
-                            </div>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
-        </div>
-
         <!-- Zona Menampilkan Grid List Event -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($events as $event)

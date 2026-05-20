@@ -22,7 +22,6 @@
         <form method="GET" action="{{ route('admin.partners.index') }}" class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h2 class="text-lg font-black text-slate-800">Daftar Partner</h2>
-                <p class="text-sm text-slate-500">Gunakan pencarian untuk memfilter nama partner.</p>
             </div>
             <div class="flex w-full gap-3 lg:max-w-md">
                 <label class="sr-only" for="partner-search">Cari partner</label>
