@@ -2,7 +2,7 @@
 	<img src="https://ui-avatars.com/api/?name=Amikom+Event+Hub&background=6366f1&color=fff&size=128" alt="Logo" width="80" height="80" style="border-radius: 20px; margin-bottom: 20px;">
 	<h1>Amikom Event Hub</h1>
 
-	<a href="https://amikomhubevent-3394-main-ciwbmn.free.laravel.cloud/">Lihat Demo Aplikasi</a>
+	<a href="https://amikomhubevent-3394-main-ciwbmn.laravel.cloud/">Lihat Demo Aplikasi</a>
 </div>
 
 ---
