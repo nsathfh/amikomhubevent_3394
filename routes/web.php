@@ -18,13 +18,17 @@ Route::get('/checkout', [EventController::class, 'showCheckout'])->name('checkou
 Route::post('/checkout', [EventController::class, 'processCheckout'])->name('checkout.process');
 Route::get('/my-ticket', [TicketController::class, 'show'])->name('ticket');
 
-//Rute Admin Area
+// Rute untuk Halaman Admin (Mengelompokkan rute dengan prefix /admin dan nama route diawali 'admin.')
 Route::group(['prefix' => 'admin', 'as' => 'admin.'], function() {
     Route::get('/', [DashboardController::class, 'viewDashboard'])->name('dashboard');
     Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions.index');
     Route::resource('categories', AdminCategoryController::class)->except(['show']);
+    
+    // Rute resource secara otomatis membuat 7 rute CRUD (index, create, store, edit, update, destroy).
+    // Kita kecualikan 'show' karena tidak memerlukan halaman detail partner secara khusus.
     Route::resource('partners', AdminPartnerController::class)->except(['show']);
+    
     Route::resource('events', AdminEventController::class);
 });
 
