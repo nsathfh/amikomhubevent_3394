@@ -18,8 +18,17 @@ Route::get('/checkout', [EventController::class, 'showCheckout'])->name('checkou
 Route::post('/checkout', [EventController::class, 'processCheckout'])->name('checkout.process');
 Route::get('/my-ticket', [TicketController::class, 'show'])->name('ticket');
 
+use App\Http\Controllers\AuthController;
+
+// Rute Autentikasi Admin (Bisa diakses publik/tamu)
+// Diberi nama 'login' agar middleware 'auth' bawaan Laravel otomatis mengalihkan pengguna yang belum login ke rute ini
+Route::get('/admin/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/admin/login', [AuthController::class, 'login']);
+Route::post('/admin/logout', [AuthController::class, 'logout'])->name('logout');
+
 // Rute untuk Halaman Admin (Mengelompokkan rute dengan prefix /admin dan nama route diawali 'admin.')
-Route::group(['prefix' => 'admin', 'as' => 'admin.'], function() {
+// Menerapkan middleware 'auth' (harus terautentikasi) dan 'admin' (harus role admin)
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'admin']], function() {
     Route::get('/', [DashboardController::class, 'viewDashboard'])->name('dashboard');
     Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions.index');
