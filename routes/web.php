@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/event/{event?}', [EventController::class, 'show'])->name('events.show');
 Route::redirect('/event-detail.html', '/event');
-Route::get('/checkout', [EventController::class, 'showCheckout'])->name('checkout');
-Route::post('/checkout', [EventController::class, 'processCheckout'])->name('checkout.process');
+Route::get('/checkout/{event}', [App\Http\Controllers\CheckoutController::class, 'create'])->name('checkout.create');
+Route::post('/checkout/{event}', [App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/my-ticket', [TicketController::class, 'show'])->name('ticket');
 
 use App\Http\Controllers\AuthController;
