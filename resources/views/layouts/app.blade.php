@@ -82,8 +82,8 @@
                 <h4 class="mb-6 font-bold text-white">Navigasi</h4>
                 <ul class="space-y-4">
                     <li><a href="{{ route('home') }}" class="transition hover:text-white">Beranda</a></li>
-                    <li><a href="{{ route('events.show') }}" class="transition hover:text-white">Detail Event</a></li>
-                    <li><a href="{{ route('checkout') }}" class="transition hover:text-white">Checkout</a></li>
+                    <li><a href="{{ route('home') }}#events" class="transition hover:text-white">Detail Event</a></li>
+                    <li><a href="{{ route('home') }}#events" class="transition hover:text-white">Checkout</a></li>
                     <li><a href="{{ route('admin.dashboard') }}" class="transition hover:text-white">Admin Dashboard</a></li>
                 </ul>
             </div>

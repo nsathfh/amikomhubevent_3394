@@ -55,7 +55,7 @@
                             Sisa stok: <span class="font-bold underline">{{ $event->stock }} Tiket lagi!</span>
                         </p>
                     </div>
-                    <a href="{{ route('checkout', ['event_id' => $event->id]) }}" class="inline-block rounded-2xl bg-white px-10 py-5 text-xl font-black text-indigo-600 shadow-xl transition-transform hover:scale-105">Pesan Sekarang</a>
+                    <a href="{{ route('checkout.create', $event->id) }}" class="inline-block rounded-2xl bg-white px-10 py-5 text-xl font-black text-indigo-600 shadow-xl transition-transform hover:scale-105">Pesan Sekarang</a>
                 </div>
                 <div class="absolute -right-20 -bottom-20 h-64 w-64 rounded-full bg-white opacity-10"></div>
                 <div class="absolute -left-10 -top-10 h-32 w-32 rounded-full bg-indigo-400 opacity-20"></div>

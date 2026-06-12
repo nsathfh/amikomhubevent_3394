@@ -14,17 +14,30 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/event/{event?}', [EventController::class, 'show'])->name('events.show');
 Route::redirect('/event-detail.html', '/event');
-Route::get('/checkout', [EventController::class, 'showCheckout'])->name('checkout');
-Route::post('/checkout', [EventController::class, 'processCheckout'])->name('checkout.process');
+Route::get('/checkout/{event}', [App\Http\Controllers\CheckoutController::class, 'create'])->name('checkout.create');
+Route::post('/checkout/{event}', [App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/my-ticket', [TicketController::class, 'show'])->name('ticket');
 
-//Rute Admin Area
-Route::group(['prefix' => 'admin', 'as' => 'admin.'], function() {
+use App\Http\Controllers\AuthController;
+
+// Rute Autentikasi Admin (Bisa diakses publik/tamu)
+// Diberi nama 'login' agar middleware 'auth' bawaan Laravel otomatis mengalihkan pengguna yang belum login ke rute ini
+Route::get('/admin/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/admin/login', [AuthController::class, 'login']);
+Route::post('/admin/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Rute untuk Halaman Admin (Mengelompokkan rute dengan prefix /admin dan nama route diawali 'admin.')
+// Menerapkan middleware 'auth' (harus terautentikasi) dan 'admin' (harus role admin)
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'admin']], function() {
     Route::get('/', [DashboardController::class, 'viewDashboard'])->name('dashboard');
     Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions.index');
     Route::resource('categories', AdminCategoryController::class)->except(['show']);
+    
+    // Rute resource secara otomatis membuat 7 rute CRUD (index, create, store, edit, update, destroy).
+    // Kita kecualikan 'show' karena tidak memerlukan halaman detail partner secara khusus.
     Route::resource('partners', AdminPartnerController::class)->except(['show']);
+    
     Route::resource('events', AdminEventController::class);
 });
 
