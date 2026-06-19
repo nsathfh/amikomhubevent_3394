@@ -7,7 +7,7 @@
 </div>
 
 ---
-
+<a href="https://amikomeventhub3394.42web.io">Lihat Demo Aplikasi</a>
 ### Identitas Mahasiswa
 
 - **Nama:** Nisa Athifah As Sodri
