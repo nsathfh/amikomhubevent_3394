@@ -3,6 +3,7 @@
 	<h1>Amikom Event Hub</h1>
 
     <a href="https://amikomhubevent-3394-main-ciwbmn.laravel.cloud/">Lihat Demo Aplikasi</a>
+    <a href="https://amikomeventhub3394.42web.io">Lihat Demo Aplikasi</a>
 </div>
 
 ---
