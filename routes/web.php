@@ -16,6 +16,8 @@ Route::get('/event/{event?}', [EventController::class, 'show'])->name('events.sh
 Route::redirect('/event-detail.html', '/event');
 Route::get('/checkout/{event}', [App\Http\Controllers\CheckoutController::class, 'create'])->name('checkout.create');
 Route::post('/checkout/{event}', [App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/payment/{order_id}', [App\Http\Controllers\CheckoutController::class, 'payment'])->name('checkout.payment');
+Route::get('/success/{order_id}', [App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/my-ticket', [TicketController::class, 'show'])->name('ticket');
 
 use App\Http\Controllers\AuthController;
