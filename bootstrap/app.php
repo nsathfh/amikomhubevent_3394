@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [ 
+            '/midtrans/callback', // Mengecualikan route webhook Midtrans dari blokir CSRF
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
