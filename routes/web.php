@@ -20,7 +20,9 @@ Route::get('/checkout/{event}/validate-coupon', [App\Http\Controllers\CheckoutCo
 Route::get('/payment/{order_id}', [App\Http\Controllers\CheckoutController::class, 'payment'])->name('checkout.payment');
 Route::get('/success/{order_id}', [App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/my-ticket', [TicketController::class, 'show'])->name('ticket');
-Route::post('/my-ticket/review', [TicketController::class, 'storeReview'])->name('ticket.review');
+Route::get('/payment/{order_id}', [\App\Http\Controllers\CheckoutController::class, 'payment']) ->name('checkout.payment'); 
+Route::post('/midtrans/callback', [\App\Http\Controllers\MidtransWebhookController::class, 'handle']);
+
 use App\Http\Controllers\AuthController;
 
 // Rute Autentikasi Admin & Penyelenggara
