@@ -158,8 +158,8 @@ class CheckoutController extends Controller
 
         $transaction = Transaction::where('order_id', $order_id)->firstOrFail();
 
-        // Jika mode lokal & ada query bypass=1, paksa status sukses (Untuk kemudahan testing lokal)
-        if (app()->environment('local') && $request->has('bypass')) {
+        // Jika mode lokal atau debug & ada query bypass=1, paksa status sukses (Untuk kemudahan testing)
+        if ((app()->environment('local') || config('app.debug')) && $request->has('bypass')) {
             $transaction->update(['status' => 'success']);
             return view('checkout.success', compact('transaction', 'categories'));
         }

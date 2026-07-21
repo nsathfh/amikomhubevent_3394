@@ -22,11 +22,11 @@
             Bayar Sekarang
         </button>
 
-        @if(app()->environment('local'))
+        @if(app()->environment('local') || config('app.debug'))
         <div class="mt-4 pt-4 border-t border-slate-100">
             <a href="{{ route('checkout.success', ['order_id' => $transaction->order_id, 'bypass' => 1]) }}" 
                 class="block w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold text-sm transition">
-                ⚡ Simulasi Bayar Sukses (Bypass Lokal)
+                ⚡ Simulasi Bayar Sukses (Bypass)
             </a>
             <p class="text-[10px] text-slate-400 mt-2">*Gunakan tombol ini untuk memaksakan status sukses secara instan tanpa Midtrans Simulator.</p>
         </div>
