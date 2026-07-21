@@ -64,26 +64,10 @@
 
                 <div class="bg-slate-100 p-6 rounded-3xl flex flex-col items-center">
                     <p class="text-slate-400 text-xs font-bold uppercase mb-4">Scan QR untuk Check-in</p>
-                    <!-- Mock QR Code -->
+                    <!-- Dynamic QR Code -->
                     <div class="w-48 h-48 bg-white p-4 rounded-xl shadow-inner flex items-center justify-center">
-                        <div class="w-full h-full border-4 border-slate-900 flex flex-wrap p-1">
-                            <div class="w-1/4 h-1/4 bg-slate-900"></div>
-                            <div class="w-1/4 h-1/4 bg-white"></div>
-                            <div class="w-1/4 h-1/4 bg-slate-900"></div>
-                            <div class="w-1/4 h-1/4 bg-white"></div>
-                            <div class="w-1/4 h-1/4 bg-white"></div>
-                            <div class="w-1/4 h-1/4 bg-slate-900"></div>
-                            <div class="w-1/4 h-1/4 bg-white"></div>
-                            <div class="w-1/4 h-1/4 bg-slate-900"></div>
-                            <div class="w-1/4 h-1/4 bg-slate-900"></div>
-                            <div class="w-1/4 h-1/4 bg-white"></div>
-                            <div class="w-1/4 h-1/4 bg-slate-900"></div>
-                            <div class="w-1/4 h-1/4 bg-white"></div>
-                            <div class="w-1/4 h-1/4 bg-white"></div>
-                            <div class="w-1/4 h-1/4 bg-slate-900"></div>
-                            <div class="w-1/4 h-1/4 bg-white"></div>
-                            <div class="w-1/4 h-1/4 bg-slate-900"></div>
-                        </div>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=192x192&data={{ urlencode($transaction->order_id) }}" 
+                            alt="QR Code" class="w-full h-full object-contain">
                     </div>
                     <p class="mt-4 font-mono font-bold text-slate-800">{{ $transaction->order_id }}</p>
                 </div>
@@ -98,8 +82,89 @@
                     class="block text-center mt-4 text-slate-500 font-bold hover:text-indigo-600">Kembali ke Beranda</a>
             </div>
         </div>
+
+        <!-- Review Section -->
+        @if(now() >= $transaction->event->date)
+        <div class="bg-white text-slate-900 rounded-[2.5rem] overflow-hidden shadow-2xl p-8 mt-6">
+            <h3 class="text-xl font-black mb-4">Ulasan & Testimoni</h3>
+            
+            @if(session('success'))
+                <div class="mb-4 p-4 bg-emerald-50 text-emerald-700 rounded-2xl font-bold border border-emerald-100">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="mb-4 p-4 bg-red-50 text-red-700 rounded-2xl font-bold border border-red-100">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if($transaction->review)
+                <div class="space-y-4">
+                    <p class="text-sm text-slate-500">Anda telah memberikan ulasan:</p>
+                    <div class="flex items-center gap-1 text-orange-400">
+                        @for($i = 1; $i <= 5; $i++)
+                            <svg class="w-5 h-5 {{ $i <= $transaction->review->rating ? 'fill-current' : 'text-slate-200' }}" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        @endfor
+                    </div>
+                    <p class="font-medium text-slate-700 italic">"{{ $transaction->review->testimony }}"</p>
+                </div>
+            @else
+                <form action="{{ route('ticket.review') }}" method="POST" class="space-y-4">
+                    @csrf
+                    <input type="hidden" name="transaction_id" value="{{ $transaction->id }}">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-500 mb-2">Penilaian Anda (Bintang)</label>
+                        <div class="flex items-center gap-2" id="star-rating">
+                            @for($i = 1; $i <= 5; $i++)
+                                <button type="button" data-rating="{{ $i }}" class="star-btn text-slate-300 hover:text-orange-400 transition cursor-pointer">
+                                    <svg class="w-8 h-8 fill-current" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                </button>
+                            @endfor
+                        </div>
+                        <input type="hidden" name="rating" id="rating-input" required value="">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-500 mb-2">Pesan Ulasan / Testimoni</label>
+                        <textarea name="testimony" rows="3" placeholder="Bagikan pengalaman Anda mengikuti acara ini..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium" required></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-bold shadow-lg hover:bg-slate-900 transition active:scale-95">
+                        Kirim Ulasan
+                    </button>
+                </form>
+            @endif
+        </div>
+        @endif
     </div>
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const stars = document.querySelectorAll('.star-btn');
+        const ratingInput = document.getElementById('rating-input');
+
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.getAttribute('data-rating');
+                ratingInput.value = rating;
+
+                stars.forEach(s => {
+                    const r = s.getAttribute('data-rating');
+                    if (r <= rating) {
+                        s.classList.remove('text-slate-300');
+                        s.classList.add('text-orange-400');
+                    } else {
+                        s.classList.remove('text-orange-400');
+                        s.classList.add('text-slate-300');
+                    }
+                });
+            });
+        });
+    });
+    </script>
 </body>
 
 </html>

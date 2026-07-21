@@ -20,12 +20,20 @@
             <a href="{{ route('admin.events.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.events.*') ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 text-indigo-100' }} rounded-xl font-bold transition">
                 Kelola Event
             </a>
+            <a href="{{ route('admin.transactions.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.transactions.*') ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 text-indigo-100' }} rounded-xl font-bold transition">
+                Kelola Transaksi
+            </a>
+            <a href="{{ route('admin.scan') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.scan') ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 text-indigo-100' }} rounded-xl font-bold transition text-amber-300 hover:text-amber-100">
+                Scan QR Check-in
+            </a>
+            @if(auth()->user()->role === 'admin')
             <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.categories.*') ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 text-indigo-100' }} rounded-xl font-bold transition">
                 Kelola Kategori
             </a>
             <a href="{{ route('admin.partners.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.partners.*') ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800 text-indigo-100' }} rounded-xl font-bold transition">
                 Kelola Partner
             </a>
+            @endif
         </nav>
 
         <!-- User Profile & Logout -->

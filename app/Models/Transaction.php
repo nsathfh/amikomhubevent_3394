@@ -16,10 +16,18 @@ class Transaction extends Model
         'total_price',
         'status',
         'snap_token',
+        'coupon_code',
+        'discount_amount',
+        'checked_in_at',
     ];
 
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
+    }
+
+    public function review()
+    {
+        return $this->hasOne(Review::class);
     }
 }

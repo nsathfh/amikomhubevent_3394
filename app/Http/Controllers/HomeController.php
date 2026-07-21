@@ -14,7 +14,7 @@ class HomeController extends Controller
         $categories = Category::orderBy('name')->get();
         $partners = Partner::latest()->get();
 
-        $query = Event::with('category')->where('date', '>=', now())->orderBy('date', 'asc');
+        $query = Event::with('category')->where('status', 'approved')->where('date', '>=', now())->orderBy('date', 'asc');
         if ($request->has('category') && $request->category != '') {
             $query->whereHas('category', function ($q) use ($request) {
                 $q->where('slug', $request->category);

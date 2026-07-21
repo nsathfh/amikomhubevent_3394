@@ -21,6 +21,16 @@
         <button id="pay-button" class="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black text-xl shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition animate-bounce-in">
             Bayar Sekarang
         </button>
+
+        @if(app()->environment('local'))
+        <div class="mt-4 pt-4 border-t border-slate-100">
+            <a href="{{ route('checkout.success', ['order_id' => $transaction->order_id, 'bypass' => 1]) }}" 
+                class="block w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold text-sm transition">
+                ⚡ Simulasi Bayar Sukses (Bypass Lokal)
+            </a>
+            <p class="text-[10px] text-slate-400 mt-2">*Gunakan tombol ini untuk memaksakan status sukses secara instan tanpa Midtrans Simulator.</p>
+        </div>
+        @endif
     </div>
 </main>
 

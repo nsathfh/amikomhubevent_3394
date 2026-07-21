@@ -14,7 +14,11 @@ class EventController extends Controller
 {
     public function show(?Event $event = null): View
     {
-        $event = $event ?? Event::with('category')->latest()->firstOrFail();
+        if ($event) {
+            $event->load(['category', 'user']);
+        } else {
+            $event = Event::with(['category', 'user'])->latest()->firstOrFail();
+        }
 
         return view('event-detail', compact('event'));
     }

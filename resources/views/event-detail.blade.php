@@ -13,13 +13,43 @@
                 <img src="{{ $event->poster_path ? asset('storage/' . $event->poster_path) : asset('assets/concert.png') }}" alt="{{ $event->title }}" class="w-full rounded-[2.5rem] border-8 border-white shadow-2xl">
                 <div class="mt-8 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
                     <h4 class="mb-4 font-bold">Penyelenggara</h4>
-                    <div class="flex items-center gap-4">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 font-bold text-indigo-600">AB</div>
+                    @if($event->user)
+                    <a href="{{ route('organizers.show', $event->user->id) }}" class="flex items-center gap-4 hover:opacity-80 transition group">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 font-bold text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition">
+                            {{ substr($event->user->name, 0, 2) }}
+                        </div>
                         <div>
-                            <p class="font-bold text-slate-800">ABP Productions</p>
+                            <p class="font-bold text-slate-800 group-hover:text-indigo-600 transition">{{ $event->user->name }}</p>
+                            <p class="text-xs text-slate-500">{{ $event->user->role === 'admin' ? 'Superadmin' : 'Verified Organizer' }}</p>
+                            @php
+                                $averageRating = 0;
+                                $reviewsCount = 0;
+                                $eventIds = \App\Models\Event::where('user_id', $event->user->id)->pluck('id');
+                                $reviewsCount = \App\Models\Review::whereIn('event_id', $eventIds)->count();
+                                if ($reviewsCount > 0) {
+                                    $averageRating = \App\Models\Review::whereIn('event_id', $eventIds)->avg('rating');
+                                }
+                            @endphp
+                            @if($reviewsCount > 0)
+                            <div class="flex items-center gap-1 mt-1">
+                                <span class="text-amber-500 font-bold text-xs">★</span>
+                                <span class="text-xs font-bold text-slate-700">{{ number_format($averageRating, 1) }}/5.0</span>
+                                <span class="text-xs text-slate-400">({{ $reviewsCount }} Ulasan)</span>
+                            </div>
+                            @else
+                            <p class="text-[10px] text-slate-400 font-semibold mt-1">★ Belum ada ulasan</p>
+                            @endif
+                        </div>
+                    </a>
+                    @else
+                    <div class="flex items-center gap-4">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 font-bold text-indigo-600">AH</div>
+                        <div>
+                            <p class="font-bold text-slate-800">Amikom Event Hub</p>
                             <p class="text-xs text-slate-500">Verified Organizer</p>
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

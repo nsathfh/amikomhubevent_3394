@@ -1,0 +1,24 @@
+{
+  "name": "AmikomEventHub",
+  "short_name": "AmikomEvent",
+  "description": "Platform reservasi tiket event online mahasiswa Amikom",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#6366f1",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://ui-avatars.com/api/?name=AH&background=6366f1&color=fff&size=192",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://ui-avatars.com/api/?name=AH&background=6366f1&color=fff&size=512",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

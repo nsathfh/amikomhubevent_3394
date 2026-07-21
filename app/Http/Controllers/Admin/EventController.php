@@ -12,7 +12,11 @@ use Illuminate\Support\Facades\Storage;
 class EventController extends Controller
 {
     public function index() {
-        $events = \App\Models\Event::with('category')->latest()->paginate(10);
+        $query = \App\Models\Event::with('category')->latest();
+        if (auth()->user()->role === 'organizer') {
+            $query->where('user_id', auth()->id());
+        }
+        $events = $query->paginate(10);
         return view('admin.events.index', compact('events'));
     }
 
@@ -39,17 +43,27 @@ class EventController extends Controller
             $data['poster_path'] = $request->file('poster')->store('posters', 'public');
         }
 
+        $data['user_id'] = auth()->id();
+        $data['status'] = auth()->user()->role === 'admin' ? 'approved' : 'pending';
 
         Event::create($data);
         return redirect()->route('admin.events.index')->with('success', 'Event berhasil dibuat.');
     }
 
     public function edit(Event $event) {
+        if (auth()->user()->role === 'organizer' && $event->user_id !== auth()->id()) {
+            abort(403, 'Akses ditolak.');
+        }
+
         $categories = Category::all();
         return view('admin.events.edit', compact('event', 'categories'));
     }
 
     public function update(Request $request, Event $event) {
+        if (auth()->user()->role === 'organizer' && $event->user_id !== auth()->id()) {
+            abort(403, 'Akses ditolak.');
+        }
+
         $data = $request->validate([
             'category_id' => 'required',
             'title'       => 'required',
@@ -73,8 +87,28 @@ class EventController extends Controller
     }
 
     public function destroy(Event $event) {
+        if (auth()->user()->role === 'organizer' && $event->user_id !== auth()->id()) {
+            abort(403, 'Akses ditolak.');
+        }
+
         if ($event->poster_path) Storage::disk('public')->delete($event->poster_path);
         $event->delete();
         return redirect()->route('admin.events.index')->with('success', 'Event berhasil dihapus.');
+    }
+
+    public function approve(Event $event) {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+        $event->update(['status' => 'approved']);
+        return back()->with('success', 'Event berhasil disetujui.');
+    }
+
+    public function reject(Event $event) {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+        $event->update(['status' => 'rejected']);
+        return back()->with('success', 'Event berhasil ditolak.');
     }
 }

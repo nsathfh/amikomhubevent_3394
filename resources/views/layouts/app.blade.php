@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'AmikomEventHub - Temukan Event Seru!' }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <style>
@@ -63,6 +64,22 @@
                     class="rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-white hover:text-indigo-600">Kategori</a>
                 <a href="{{ route('home') }}#tentang"
                     class="rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-white hover:text-indigo-600">Tentang Kami</a>
+                
+                @auth
+                    @if(in_array(auth()->user()->role, ['admin', 'organizer']))
+                        <a href="{{ route('admin.dashboard') }}"
+                            class="rounded-xl px-4 py-2 text-sm font-bold text-indigo-600 border border-indigo-200 hover:bg-indigo-50 transition ml-4">Dashboard</a>
+                    @else
+                        <span class="text-sm font-medium text-slate-500 ml-4">Halo, {{ auth()->user()->name }}</span>
+                    @endif
+                    <form action="{{ route('logout') }}" method="POST" class="inline ml-2">
+                        @csrf
+                        <button type="submit" class="rounded-xl px-4 py-2 text-sm font-semibold text-rose-600 hover:bg-rose-50 transition cursor-pointer">Keluar</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}"
+                        class="rounded-xl px-4 py-2 text-sm font-bold text-indigo-600 border border-indigo-200 hover:bg-indigo-50 transition ml-4">Masuk Penyelenggara</a>
+                @endauth
             </div>
         </div>
     </nav>
@@ -99,6 +116,15 @@
             &copy; 2024 AmikomEventHub. Built with Laravel & Tailwind CSS.
         </div>
     </footer>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register("{{ asset('sw.js') }}")
+                    .then(reg => console.log('Service Worker registered successfully.', reg))
+                    .catch(err => console.log('Service Worker registration failed: ', err));
+            });
+        }
+    </script>
 </body>
 
 </html>

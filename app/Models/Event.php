@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Event extends Model
 {
     protected $fillable = [
-        'category_id', 'title', 'description', 'date', 'location', 'price', 'stock', 'poster_path'
+        'category_id', 'user_id', 'title', 'description', 'date', 'location', 'price', 'stock', 'poster_path', 'status'
     ];
 
     protected $casts = [
@@ -19,5 +19,15 @@ class Event extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 }

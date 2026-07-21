@@ -1,15 +1,9 @@
 <!DOCTYPE html>
 <html lang="id">
-<!-- 
-    Halaman Login Admin - AmikomEventHub
-    - Menggunakan Tailwind CSS dengan gaya modern dark-mode & glassmorphism.
-    - Menampilkan pesan sukses logout jika ada (session success).
-    - Melakukan validasi email & password dan menampilkan indikator error.
--->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Admin - AmikomEventHub</title>
+    <title>Daftar Penyelenggara - AmikomEventHub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -32,32 +26,37 @@
     <div class="w-full max-w-md z-10">
         <!-- Logo Header -->
         <div class="flex flex-col items-center mb-8">
-            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 shadow-lg shadow-indigo-500/50 text-xl font-black text-white mb-3">
+            <a href="/" class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 shadow-lg shadow-indigo-500/50 text-xl font-black text-white mb-3">
                 AH
-            </div>
+            </a>
             <h1 class="text-2xl font-extrabold text-white tracking-tight">AmikomEventHub</h1>
-            <p class="text-sm text-slate-400 font-medium mt-1">Admin Control Center</p>
+            <p class="text-sm text-slate-400 font-medium mt-1">Registrasi Akun Kepanitiaan / HIMA</p>
         </div>
 
-        <!-- Login Card -->
+        <!-- Registration Card -->
         <div class="glass rounded-3xl p-8 shadow-2xl shadow-black/40">
-            <h2 class="text-xl font-bold text-white mb-6">Masuk ke Akun Anda</h2>
+            <h2 class="text-xl font-bold text-white mb-6">Buat Akun Penyelenggara</h2>
 
-            @if(session('success'))
-                <div class="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400 text-sm">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <form action="{{ route('login') }}" method="POST" class="space-y-5">
+            <form action="{{ route('organizer.register') }}" method="POST" class="space-y-5">
                 @csrf
                 
+                <!-- Name Field -->
+                <div>
+                    <label for="name" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Nama Kepanitiaan / HIMA</label>
+                    <input type="text" id="name" name="name" value="{{ old('name') }}" required autofocus
+                        class="w-full px-4 py-3 rounded-xl bg-white/5 border @error('name') border-red-500/50 focus:border-red-500 @else border-slate-700 focus:border-indigo-500 @enderror text-white placeholder-slate-500 outline-none transition focus:ring-1 focus:ring-indigo-500/50"
+                        placeholder="Contoh: HMIF Amikom">
+                    @error('name')
+                        <p class="mt-2 text-xs text-red-400 font-medium">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <!-- Email Field -->
                 <div>
                     <label for="email" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Alamat Email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" required
                         class="w-full px-4 py-3 rounded-xl bg-white/5 border @error('email') border-red-500/50 focus:border-red-500 @else border-slate-700 focus:border-indigo-500 @enderror text-white placeholder-slate-500 outline-none transition focus:ring-1 focus:ring-indigo-500/50"
-                        placeholder="admin@amikom.ac.id">
+                        placeholder="hima@amikom.ac.id">
                     @error('email')
                         <p class="mt-2 text-xs text-red-400 font-medium">{{ $message }}</p>
                     @enderror
@@ -74,38 +73,24 @@
                     @enderror
                 </div>
 
-                <!-- Remember Me Checkbox -->
-                <div class="flex items-center justify-between">
-                    <label class="flex items-center gap-2 text-sm text-slate-400 cursor-pointer select-none">
-                        <input type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-700 bg-white/5 text-indigo-600 focus:ring-indigo-500/50">
-                        <span>Ingat Saya</span>
-                    </label>
+                <!-- Confirm Password Field -->
+                <div>
+                    <label for="password_confirmation" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Konfirmasi Kata Sandi</label>
+                    <input type="password" id="password_confirmation" name="password_confirmation" required
+                        class="w-full px-4 py-3 rounded-xl bg-white/5 border border-slate-700 focus:border-indigo-500 text-white placeholder-slate-500 outline-none transition focus:ring-1 focus:ring-indigo-500/50"
+                        placeholder="••••••••">
                 </div>
 
                 <!-- Submit Button -->
                 <button type="submit" 
                     class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 transition transform active:scale-[0.98] duration-200">
-                    Masuk Sekarang
+                    Daftar Sekarang
                 </button>
             </form>
 
-            <div class="mt-4 flex items-center justify-between gap-4">
-                <span class="h-[1px] w-full bg-slate-700"></span>
-                <span class="text-xs text-slate-500 uppercase font-bold whitespace-nowrap">Atau</span>
-                <span class="h-[1px] w-full bg-slate-700"></span>
-            </div>
-
-            <!-- Google SSO Button -->
-            <a href="{{ route('sso.google') }}" class="mt-4 w-full py-3 px-4 border border-slate-700 hover:border-slate-500 bg-white/5 hover:bg-white/10 rounded-xl font-bold flex items-center justify-center gap-3 transition text-white text-sm">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12.24 10.285V13.4h6.887C18.2 15.614 15.645 18 12.24 18c-3.86 0-7-3.14-7-7s3.14-7 7-7c1.7 0 3.3.65 4.5 1.8l2.4-2.4C17.3 1.7 14.85 1 12.24 1 6.64 1 2 5.64 2 11.24s4.64 10.24 10.24 10.24c5.795 0 10.24-4.11 10.24-10.24 0-.614-.055-1.2-.164-1.745H12.24z"/>
-                </svg>
-                <span>Masuk dengan Google</span>
-            </a>
-
             <div class="mt-6 text-center text-sm">
-                <span class="text-slate-400">Penyelenggara baru?</span>
-                <a href="{{ route('organizer.register') }}" class="text-indigo-400 font-bold hover:underline ml-1">Daftar Akun HIMA/Panitia</a>
+                <span class="text-slate-400">Sudah punya akun?</span>
+                <a href="{{ route('login') }}" class="text-indigo-400 font-bold hover:underline ml-1">Masuk di sini</a>
             </div>
         </div>
 

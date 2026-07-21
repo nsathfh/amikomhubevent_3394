@@ -57,7 +57,8 @@ class CheckoutTest extends TestCase
             'customer_phone' => '0812345678',
         ]);
 
-        $response->assertRedirect('/');
+        $transaction = Transaction::latest()->first();
+        $response->assertRedirect(route('checkout.payment', $transaction->order_id));
         
         $this->assertDatabaseHas('transactions', [
             'event_id' => $event->id,
@@ -65,7 +66,7 @@ class CheckoutTest extends TestCase
             'customer_email' => 'john@example.com',
             'customer_phone' => '0812345678',
             'total_price' => 15000, // 10000 + 5000 admin fee
-            'status' => 'Pending',
+            'status' => 'pending',
         ]);
 
         $this->assertEquals(49, $event->fresh()->stock);
@@ -137,5 +138,79 @@ class CheckoutTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('TRX-123456');
         $response->assertSee('John Doe');
+    }
+
+    /**
+     * Test that guest can checkout free event and get bypassed to success page.
+     */
+    public function test_guest_can_checkout_free_event_with_bypass(): void
+    {
+        $category = Category::create(['name' => 'Seminar', 'slug' => 'seminar']);
+        $event = Event::create([
+            'category_id' => $category->id,
+            'title' => 'Free Workshop IT',
+            'description' => 'Free event description',
+            'date' => now()->addDays(5),
+            'location' => 'Online',
+            'price' => 0, // free event
+            'stock' => 10,
+        ]);
+
+        $response = $this->post("/checkout/{$event->id}", [
+            'customer_name' => 'John Doe Free',
+            'customer_email' => 'free@example.com',
+            'customer_phone' => '0812345679',
+        ]);
+
+        $transaction = Transaction::latest()->first();
+        $response->assertRedirect(route('checkout.success', $transaction->order_id));
+
+        $this->assertDatabaseHas('transactions', [
+            'event_id' => $event->id,
+            'customer_name' => 'John Doe Free',
+            'status' => 'success',
+            'total_price' => 0, // no admin fee for free events
+        ]);
+    }
+
+    /**
+     * Test checkout applying coupon MAHASISWA50.
+     */
+    public function test_checkout_with_coupon(): void
+    {
+        \App\Models\Coupon::create([
+            'code' => 'MAHASISWA50',
+            'discount_percent' => 50,
+            'is_active' => true,
+        ]);
+
+        $category = Category::create(['name' => 'Seminar', 'slug' => 'seminar']);
+        $event = Event::create([
+            'category_id' => $category->id,
+            'title' => 'Event Tech',
+            'description' => 'Description test',
+            'date' => now()->addDays(10),
+            'location' => 'Lobby',
+            'price' => 10000,
+            'stock' => 50,
+        ]);
+
+        $response = $this->post("/checkout/{$event->id}", [
+            'customer_name' => 'John Doe',
+            'customer_email' => 'john@example.com',
+            'customer_phone' => '0812345678',
+            'coupon_code' => 'MAHASISWA50',
+        ]);
+
+        $transaction = Transaction::latest()->first();
+        $response->assertRedirect(route('checkout.payment', $transaction->order_id));
+
+        $this->assertDatabaseHas('transactions', [
+            'event_id' => $event->id,
+            'customer_name' => 'John Doe',
+            'coupon_code' => 'MAHASISWA50',
+            'discount_amount' => 5000, // 50% of 10000
+            'total_price' => 10000, // (10000 - 5000) + 5000 admin fee
+        ]);
     }
 }

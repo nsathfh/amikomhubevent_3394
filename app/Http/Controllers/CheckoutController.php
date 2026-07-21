@@ -24,6 +24,7 @@ class CheckoutController extends Controller
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'required|string|max:20',
+            'coupon_code' => 'nullable|string',
         ]);
 
         // 2. Cegah Check-out Jika Tiket Habis
@@ -33,7 +34,23 @@ class CheckoutController extends Controller
 
         // 3. Generate Kode TRX (Unik)
         $orderId = 'TRX-' . time() . '-' . Str::random(5);
-        $totalPrice = $event->price + 5000; // Menambahkan biaya admin
+        
+        // Cek kupon voucher
+        $discountAmount = 0;
+        $couponCode = null;
+        if ($request->filled('coupon_code')) {
+            $coupon = \App\Models\Coupon::where('code', $request->coupon_code)->where('is_active', true)->first();
+            if ($coupon) {
+                $couponCode = $coupon->code;
+                $discountAmount = ($event->price * $coupon->discount_percent) / 100;
+            }
+        }
+
+        $adminFee = $event->price == 0 ? 0 : 5000;
+        $totalPrice = ($event->price - $discountAmount) + $adminFee;
+        if ($totalPrice < 0) {
+            $totalPrice = 0;
+        }
 
         // 4. Merekam Transaksi ke Database
         $transaction = Transaction::create([
@@ -43,11 +60,18 @@ class CheckoutController extends Controller
             'customer_email' => $request->customer_email,
             'customer_phone' => $request->customer_phone,
             'total_price' => $totalPrice,
-            'status' => 'pending', // Status Awal
+            'status' => $event->price == 0 ? 'success' : 'pending', // Status Awal
+            'coupon_code' => $couponCode,
+            'discount_amount' => $discountAmount,
         ]);
 
         // Kurangi stok tiket event
         $event->decrement('stock');
+
+        // Jika acara gratis, bypass Midtrans
+        if ($event->price == 0) {
+            return redirect()->route('checkout.success', $transaction->order_id);
+        }
 
         // --- INTEGRASI SNAP MIDTRANS ---
 
@@ -85,6 +109,37 @@ class CheckoutController extends Controller
         }
     }
 
+    // Validate Coupon AJAX Endpoint
+    public function validateCoupon(Request $request, Event $event)
+    {
+        $request->validate([
+            'code' => 'required|string',
+        ]);
+
+        $coupon = \App\Models\Coupon::where('code', $request->code)->where('is_active', true)->first();
+
+        if (!$coupon) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Kode voucher tidak valid atau telah kedaluwarsa.',
+            ]);
+        }
+
+        $discountAmount = ($event->price * $coupon->discount_percent) / 100;
+        $adminFee = $event->price == 0 ? 0 : 5000;
+        $newTotal = ($event->price - $discountAmount) + $adminFee;
+
+        return response()->json([
+            'valid' => true,
+            'code' => $coupon->code,
+            'discount_percent' => $coupon->discount_percent,
+            'discount_amount' => $discountAmount,
+            'new_total' => $newTotal,
+            'new_total_formatted' => 'Rp ' . number_format($newTotal, 0, ',', '.'),
+            'discount_amount_formatted' => '-Rp ' . number_format($discountAmount, 0, ',', '.'),
+        ]);
+    }
+
     // 11.4.5 - Halaman pembayaran Snap Midtrans
     public function payment($order_id)
     {
@@ -96,12 +151,24 @@ class CheckoutController extends Controller
     }
 
     // 11.4.6 - Halaman sukses setelah pembayaran
-    public function success($order_id)
+    public function success(Request $request, $order_id)
     {
         // Mengambil daftar kategori untuk keperluan menu footer
         $categories = \App\Models\Category::all();
 
         $transaction = Transaction::where('order_id', $order_id)->firstOrFail();
+
+        // Jika mode lokal & ada query bypass=1, paksa status sukses (Untuk kemudahan testing lokal)
+        if (app()->environment('local') && $request->has('bypass')) {
+            $transaction->update(['status' => 'success']);
+            return view('checkout.success', compact('transaction', 'categories'));
+        }
+
+        // Jika transaksi gratis, lewati validasi Midtrans
+        if ($transaction->total_price == 0 || $transaction->event->price == 0) {
+            $transaction->update(['status' => 'success']);
+            return view('checkout.success', compact('transaction', 'categories'));
+        }
 
         // Validasi status pembayaran asli dari Midtrans (Mencegah manipulasi URL)
         \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');

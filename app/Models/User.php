@@ -22,7 +22,23 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
+
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isOrganizer(): bool
+    {
+        return $this->role === 'organizer';
+    }
 
     /**
      * The attributes that should be hidden for serialization.
