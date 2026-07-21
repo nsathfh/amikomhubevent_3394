@@ -73,48 +73,119 @@ class CheckoutController extends Controller
             return redirect()->route('checkout.success', $transaction->order_id);
         }
 
-        // --- INTEGRASI SNAP MIDTRANS --- 
-        // Konfigurasi Kredensial Environment Midtrans 
-        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY'); 
-        \Midtrans\Config::$isProduction = false; // Mode Sandbox! 
-        \Midtrans\Config::$isSanitized = true; 
+        // --- INTEGRASI SNAP MIDTRANS ---
+
+        // Konfigurasi Kredensial Environment Midtrans
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$isProduction = false; // Mode Sandbox!
+        \Midtrans\Config::$isSanitized = true;
         \Midtrans\Config::$is3ds = true;
 
-        // Susun Paket Array Data Transaksi 
-        $params = [ 
-        'transaction_details' => [ 
-        'order_id' => $orderId, 
-        'gross_amount' => $totalPrice, 
-        ], 
-        'customer_details' => [ 
-        'first_name' => $request->customer_name, 
-        'email' => $request->customer_email, 
-        'phone' => $request->customer_phone, 
-        ], 
-        ]; 
+        // Susun Paket Array Data Transaksi
+        $params = [
+            'transaction_details' => [
+                'order_id' => $orderId,
+                'gross_amount' => $totalPrice,
+            ],
+            'customer_details' => [
+                'first_name' => $request->customer_name,
+                'email' => $request->customer_email,
+                'phone' => $request->customer_phone,
+            ],
+        ];
 
-        try { 
+        try {
+            // Perintah Tembak Generate Snap Token
+            $snapToken = \Midtrans\Snap::getSnapToken($params);
 
-            // Perintah Tembak Generate Snap Token 
-            $snapToken = \Midtrans\Snap::getSnapToken($params); 
+            // Update rekaman kita bahwa transaksi terkait sudah memiliki id token pelunasan
+            $transaction->update(['snap_token' => $snapToken]);
 
-            // Update rekaman kita bahwa transaksi terkait sudah memiliki id token pelunasan 
-            $transaction->update(['snap_token' => $snapToken]); 
+            // Redirect ke halaman antarmuka pembayaran final pelanggan
+            return redirect()->route('checkout.payment', $transaction->order_id);
 
-            // Redirect ke halaman antarmuka pembayaran final pelanggan 
-            return redirect()->route('checkout.payment', $transaction->order_id); 
-        } catch (\Exception $e) { 
-            return back()->with('error', 'Gagal memproses pembayaran jaringan: ' . $e->getMessage()); 
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
         }
     }
 
-    public function payment($order_id) 
-    { 
-        // Mengambil daftar kategori untuk keperluan menu footer 
-        $categories = \App\Models\Category::all();
-        $transaction = Transaction::with('event')->where('order_id', $order_id)
-        >firstOrFail(); 
-        return view('checkout.payment', compact('transaction','categories')); 
+    // Validate Coupon AJAX Endpoint
+    public function validateCoupon(Request $request, Event $event)
+    {
+        $request->validate([
+            'code' => 'required|string',
+        ]);
+
+        $coupon = \App\Models\Coupon::where('code', $request->code)->where('is_active', true)->first();
+
+        if (!$coupon) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Kode voucher tidak valid atau telah kedaluwarsa.',
+            ]);
+        }
+
+        $discountAmount = ($event->price * $coupon->discount_percent) / 100;
+        $adminFee = $event->price == 0 ? 0 : 5000;
+        $newTotal = ($event->price - $discountAmount) + $adminFee;
+
+        return response()->json([
+            'valid' => true,
+            'code' => $coupon->code,
+            'discount_percent' => $coupon->discount_percent,
+            'discount_amount' => $discountAmount,
+            'new_total' => $newTotal,
+            'new_total_formatted' => 'Rp ' . number_format($newTotal, 0, ',', '.'),
+            'discount_amount_formatted' => '-Rp ' . number_format($discountAmount, 0, ',', '.'),
+        ]);
     }
-    
+
+    // 11.4.5 - Halaman pembayaran Snap Midtrans
+    public function payment($order_id)
+    {
+        // Mengambil daftar kategori untuk keperluan menu footer
+        $categories = \App\Models\Category::all();
+
+        $transaction = Transaction::with('event')->where('order_id', $order_id)->firstOrFail();
+        return view('checkout.payment', compact('transaction', 'categories'));
+    }
+
+    // 11.4.6 - Halaman sukses setelah pembayaran
+    public function success(Request $request, $order_id)
+    {
+        // Mengambil daftar kategori untuk keperluan menu footer
+        $categories = \App\Models\Category::all();
+
+        $transaction = Transaction::where('order_id', $order_id)->firstOrFail();
+
+        // Jika mode lokal & ada query bypass=1, paksa status sukses (Untuk kemudahan testing lokal)
+        if (app()->environment('local') && $request->has('bypass')) {
+            $transaction->update(['status' => 'success']);
+            return view('checkout.success', compact('transaction', 'categories'));
+        }
+
+        // Jika transaksi gratis, lewati validasi Midtrans
+        if ($transaction->total_price == 0 || $transaction->event->price == 0) {
+            $transaction->update(['status' => 'success']);
+            return view('checkout.success', compact('transaction', 'categories'));
+        }
+
+        // Validasi status pembayaran asli dari Midtrans (Mencegah manipulasi URL)
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$isProduction = false;
+
+        try {
+            $midtransStatus = \Midtrans\Transaction::status($order_id);
+
+            // Hanya ubah status menjadi sukses jika Midtrans mengonfirmasi pembayaran lunas
+            if (in_array($midtransStatus->transaction_status, ['capture', 'settlement'])) {
+                $transaction->update(['status' => 'success']);
+            }
+        } catch (\Exception $e) {
+            // Jika error (transaksi tidak ada di Midtrans, koneksi terputus), kembalikan ke beranda
+            return redirect()->route('home')->with('error', 'Transaksi tidak ditemukan atau gagal diproses oleh sistem pembayaran.');
+        }
+
+        return view('checkout.success', compact('transaction', 'categories'));
+    }
 }
