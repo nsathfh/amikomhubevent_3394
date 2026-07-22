@@ -89,20 +89,6 @@
                 </button>
             </form>
 
-            <div class="mt-4 flex items-center justify-between gap-4">
-                <span class="h-[1px] w-full bg-slate-700"></span>
-                <span class="text-xs text-slate-500 uppercase font-bold whitespace-nowrap">Atau</span>
-                <span class="h-[1px] w-full bg-slate-700"></span>
-            </div>
-
-            <!-- Google SSO Button -->
-            <a href="{{ route('sso.google') }}" class="mt-4 w-full py-3 px-4 border border-slate-700 hover:border-slate-500 bg-white/5 hover:bg-white/10 rounded-xl font-bold flex items-center justify-center gap-3 transition text-white text-sm">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12.24 10.285V13.4h6.887C18.2 15.614 15.645 18 12.24 18c-3.86 0-7-3.14-7-7s3.14-7 7-7c1.7 0 3.3.65 4.5 1.8l2.4-2.4C17.3 1.7 14.85 1 12.24 1 6.64 1 2 5.64 2 11.24s4.64 10.24 10.24 10.24c5.795 0 10.24-4.11 10.24-10.24 0-.614-.055-1.2-.164-1.745H12.24z"/>
-                </svg>
-                <span>Masuk dengan Google</span>
-            </a>
-
             <div class="mt-6 text-center text-sm">
                 <span class="text-slate-400">Penyelenggara baru?</span>
                 <a href="{{ route('organizer.register') }}" class="text-indigo-400 font-bold hover:underline ml-1">Daftar Akun HIMA/Panitia</a>

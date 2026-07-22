@@ -112,13 +112,7 @@ class AuthController extends Controller
         if ($request->has('redirect_to')) {
             session(['google_redirect_to' => $request->redirect_to]);
         } else {
-            // Jika masuk dari halaman admin login, tandai sebagai admin login
-            if (url()->previous() === route('login')) {
-                session(['google_redirect_to' => route('admin.dashboard')]);
-                session(['google_is_admin_login' => true]);
-            } else {
-                session(['google_redirect_to' => url()->previous() ?: route('home')]);
-            }
+            session(['google_redirect_to' => url()->previous() ?: route('home')]);
         }
         return \Laravel\Socialite\Facades\Socialite::driver('google')->redirect();
     }
@@ -128,8 +122,6 @@ class AuthController extends Controller
      */
     public function handleGoogleCallback()
     {
-        $isAdminLogin = session()->pull('google_is_admin_login', false);
-
         try {
             $googleUser = \Laravel\Socialite\Facades\Socialite::driver('google')->user();
             $email = $googleUser->getEmail();
@@ -140,16 +132,15 @@ class AuthController extends Controller
             $name = 'Demo User Google';
         }
 
-        // Cari user berdasarkan email
+        // Cari atau buat user publik dengan role 'user'
         $user = \App\Models\User::where('email', $email)->first();
 
         if (!$user) {
-            $role = $isAdminLogin ? 'organizer' : 'user';
             $user = \App\Models\User::create([
                 'name' => $name,
                 'email' => $email,
                 'password' => bcrypt(\Illuminate\Support\Str::random(16)),
-                'role' => $role
+                'role' => 'user'
             ]);
         }
 
@@ -157,14 +148,10 @@ class AuthController extends Controller
 
         $redirectUrl = session()->pull('google_redirect_to', route('home'));
 
-        // Keamanan: Jika role user biasa, jangan alihkan ke area admin (cegah 403)
+        // Keamanan: Jika role user biasa, jangan alihkan ke area admin
         if (!in_array($user->role, ['admin', 'organizer'])) {
             if ($redirectUrl === route('admin.dashboard') || str_contains($redirectUrl, '/admin')) {
                 $redirectUrl = route('home');
-            }
-        } else {
-            if ($redirectUrl === route('home')) {
-                $redirectUrl = route('admin.dashboard');
             }
         }
 
