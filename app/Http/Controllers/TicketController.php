@@ -35,10 +35,6 @@ class TicketController extends Controller
             return back()->with('error', 'Anda sudah memberikan ulasan untuk tiket ini.');
         }
 
-        // Check if event has completed
-        if (now() < $transaction->event->date) {
-            return back()->with('error', 'Ulasan hanya dapat diberikan setelah acara selesai.');
-        }
 
         \App\Models\Review::create([
             'event_id' => $transaction->event_id,

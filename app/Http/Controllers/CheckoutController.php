@@ -11,6 +11,11 @@ class CheckoutController extends Controller
 {
     public function create(Event $event)
     {
+        // Jika event sudah lewat/berlalu, cegah checkout
+        if ($event->date->isPast()) {
+            return redirect()->route('home')->with('error', 'Tiket untuk acara yang sudah selesai tidak dapat dibeli.');
+        }
+
         // Mengambil daftar kategori untuk keperluan menu footer
         $categories = \App\Models\Category::all();
 
@@ -19,6 +24,11 @@ class CheckoutController extends Controller
 
     public function store(Request $request, Event $event)
     {
+        // Jika event sudah lewat/berlalu, cegah pembelian
+        if ($event->date->isPast()) {
+            return redirect()->route('home')->with('error', 'Tiket untuk acara yang sudah selesai tidak dapat dibeli.');
+        }
+
         // 1. Validasi Input Kredensial Pelanggan
         $request->validate([
             'customer_name' => 'required|string|max:255',

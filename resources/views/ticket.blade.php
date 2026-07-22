@@ -84,7 +84,6 @@
         </div>
 
         <!-- Review Section -->
-        @if(now() >= $transaction->event->date)
         <div class="bg-white text-slate-900 rounded-[2.5rem] overflow-hidden shadow-2xl p-8 mt-6">
             <h3 class="text-xl font-black mb-4">Ulasan & Testimoni</h3>
             
@@ -138,7 +137,6 @@
                 </form>
             @endif
         </div>
-        @endif
     </div>
 
     <script>
