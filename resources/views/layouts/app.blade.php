@@ -77,8 +77,15 @@
                         <button type="submit" class="rounded-xl px-4 py-2 text-sm font-semibold text-rose-600 hover:bg-rose-50 transition cursor-pointer">Keluar</button>
                     </form>
                 @else
+                    <a href="{{ route('sso.google') }}"
+                        class="rounded-xl px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition ml-4 flex items-center gap-2 shadow-md shadow-indigo-600/20">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12.24 10.285V13.4h6.887C18.2 15.614 15.645 18 12.24 18c-3.86 0-7-3.14-7-7s3.14-7 7-7c1.7 0 3.3.65 4.5 1.8l2.4-2.4C17.3 1.7 14.85 1 12.24 1 6.64 1 2 5.64 2 11.24s4.64 10.24 10.24 10.24c5.795 0 10.24-4.11 10.24-10.24 0-.614-.055-1.2-.164-1.745H12.24z"/>
+                        </svg>
+                        <span>Masuk Google</span>
+                    </a>
                     <a href="{{ route('login') }}"
-                        class="rounded-xl px-4 py-2 text-sm font-bold text-indigo-600 border border-indigo-200 hover:bg-indigo-50 transition ml-4">Masuk Penyelenggara</a>
+                        class="rounded-xl px-4 py-2 text-sm font-bold text-slate-600 hover:text-indigo-600 transition ml-2">Area Penyelenggara</a>
                 @endauth
             </div>
         </div>
