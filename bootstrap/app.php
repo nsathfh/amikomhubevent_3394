@@ -11,6 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust all reverse proxies (Railway, Cloudflare, Nginx)
+        $middleware->trustProxies(at: '*');
+
         // Mendaftarkan alias middleware kustom 'admin' ke class IsAdmin
         // Alias ini nantinya akan dipanggil di routes/web.php untuk memproteksi route group admin
         $middleware->alias([
